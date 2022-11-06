@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS team (
 );
 
 CREATE TABLE IF NOT EXISTS player (
-    player_id SERIAL PRIMARY KEY,
+    player_ssn SERIAL PRIMARY KEY,
     first_name VARCHAR(20),
     last_name VARCHAR(20),
     current_team SERIAL ,
@@ -20,14 +20,27 @@ CREATE TABLE IF NOT EXISTS player (
             REFERENCES team(team_id)    
 );
 
-CREATE TABLE IF NOT EXISTS game_role (
-    player_id SERIAL,
+CREATE TABLE IF NOT EXISTS hitter_stats (
+    player_id SERIAL PRIMARY KEY,
+    player_ssn SERIAL,
     position VARCHAR(2),
-    job_type VARCHAR(8),
+    hr INTEGER,
+    ops REAL,
 
-    CONSTRAINT FK_play_rol
-        FOREIGN KEY(player_id)
-            REFERENCES player(player_id)
+    CONSTRAINT FK_play_as_hitter
+        FOREIGN KEY(player_ssn)
+            REFERENCES player(player_ssn)
+);
+
+CREATE TABLE IF NOT EXISTS pitcher_stats (
+    player_id SERIAL PRIMARY KEY,
+    player_ssn SERIAL,
+    era REAL,
+    win INTEGER,
+
+    CONSTRAINT FK_play_as_pitcher
+        FOREIGN KEY(player_ssn)
+            REFERENCES player(player_ssn)
 );
 
 CREATE TABLE IF NOT EXISTS referee (
@@ -89,48 +102,71 @@ INSERT INTO team(team_id,team_name,stadium) VALUES('29','Houston Astros','Minute
 INSERT INTO team(team_id,team_name,stadium) VALUES('30','Miami Marlins','LoanDepot Parkdouble-dagger');
 
 -- init player table
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('1', 'Matt', 'Olson', '16', '21');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('2', 'Teoscar', 'Hernandez', '15', '29');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('3', 'Travis', 'Arnaud', '16', '17');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('4', 'Freddie', 'Freeman', '26', '16');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('5', 'Harrison', 'Bader', '13', '10');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('6', 'Bryce', 'Harper', '18', '19');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('7', 'Eduardo', 'Escobar', '17', '1');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('8', 'Trea', 'Turner', '26', '27');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('9', 'Pete', 'Alonso', '17', '17');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('10', 'Orlando', 'Arcia', '16', '8');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('11', 'Matt', 'Chapman', '15', '21');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('12', 'Jeremy', 'Pena', '29', '29');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('13', 'Lars', 'Nootbaar', '21', '10');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('14', 'Anthony', 'Rizzo', '13', '12');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('15', 'Eugenio', 'Suarez', '22', '3');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('16', 'Jason', 'Adam', '14', '4');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('17', 'Tyler', 'Anderson', '26', '25');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('18', 'Garrent', 'Cleavinger', '14', '11');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('19', 'Giovanny', 'Gallegos', '10', '13');
-INSERT INTO player(player_id, first_name, last_name, current_team, draft_team) VALUES('20', 'Tyler', 'Glasnow', '14', '9');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('1', 'Matt', 'Olson', '16', '21');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('2', 'Teoscar', 'Hernandez', '15', '29');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('3', 'Travis', 'Arnaud', '16', '17');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('4', 'Freddie', 'Freeman', '26', '16');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('5', 'Harrison', 'Bader', '13', '10');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('6', 'Bryce', 'Harper', '18', '19');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('7', 'Eduardo', 'Escobar', '17', '1');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('8', 'Trea', 'Turner', '26', '27');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('9', 'Pete', 'Alonso', '17', '17');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('10', 'Orlando', 'Arcia', '16', '8');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('11', 'Matt', 'Chapman', '15', '21');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('12', 'Jeremy', 'Pena', '29', '29');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('13', 'Lars', 'Nootbaar', '21', '10');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('14', 'Anthony', 'Rizzo', '13', '12');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('15', 'Eugenio', 'Suarez', '22', '3');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('16', 'Jason', 'Adam', '14', '4');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('17', 'Tyler', 'Anderson', '26', '25');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('18', 'Garrent', 'Cleavinger', '14', '11');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('19', 'Giovanny', 'Gallegos', '10', '13');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('20', 'Tyler', 'Glasnow', '14', '9');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('21', 'Gerrit', 'Cole', '13', '9');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('22', 'Yu', 'Darvish', '27', '27');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('23', 'Seranthony', 'Dominguez', '18', '18');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('24', 'Brad', 'Hand', '18', '30');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('25', 'Cristian', 'Javier', '29', '29');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('26', 'Hector', 'Neris', '29', '18');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('27', 'Aaron', 'Nola', '18', '18');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('28', 'Blake', 'Snell', '27', '14');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('29', 'Ranger', 'Suarez', '18', '18');
+INSERT INTO player(player_ssn, first_name, last_name, current_team, draft_team) VALUES('30', 'Framber', 'Valdez', '29', '29');
 
--- init game_role table
-INSERT INTO game_role(player_id, position, job_type) VALUES('1', '1B', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('2', 'RF', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('3', 'C', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('4', '1B', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('5', 'CF', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('6', 'DH', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('7', '3B', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('8', 'SS', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('9', '1B', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('10', '2B', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('11', '3B', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('12', 'SS', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('13', 'LF', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('14', '1B', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('15', '3B', 'Hitter');
-INSERT INTO game_role(player_id, position, job_type) VALUES('16', 'P', 'Pitcher');
-INSERT INTO game_role(player_id, position, job_type) VALUES('17', 'P', 'Pitcher');
-INSERT INTO game_role(player_id, position, job_type) VALUES('18', 'P', 'Pitcher');
-INSERT INTO game_role(player_id, position, job_type) VALUES('19', 'P', 'Pitcher');
-INSERT INTO game_role(player_id, position, job_type) VALUES('20', 'P', 'Pitcher');
+
+-- init hitter_stats table
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('1', '1', '1B', '2', '1.362');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('2', '2', 'RF', '2', '1.333');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('3', '3', 'C', '2', '1.313');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('4', '4', '1B', '1', '1.286');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('5', '5', 'CF', '5', '1.262');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('6', '6', 'DH', '6', '1.178');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('7', '7', '3B', '1', '1.233');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('8', '8', 'SS', '2', '1.111');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('9', '9', '1B', '1', '1.017');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('10', '10', '2B', '1', '1.017');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('11', '11', '3B', '0', '1.015');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('12', '12', 'SS', '4', '1.022');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('13', '13', 'LF', '0', '1.000');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('14', '14', '1B', '2', '0.984');
+INSERT INTO hitter_stats(player_id, player_ssn, position, hr, ops) VALUES('15', '15', '3B', '1', '0.981');
+
+-- init pitcher_stats table
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('1', '16', '0.', '0');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('2', '17', '0.', '0');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('3', '18', '0.', '0');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('4', '19', '0.', '0');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('5', '20', '0.', '0');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('6', '21', '2.95', '2');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('7', '22', '2.88', '2');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('8', '23', '1.69', '2');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('9', '24', '4.76', '2');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('10', '25', '0.71', '2');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('11', '26', '1.5', '2');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('12', '27', '4.91', '2');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('13', '28', '4.61', '2');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('14', '29', '1.23', '2');
+INSERT INTO pitcher_stats(player_id, player_ssn, era, win) VALUES('15', '30', '1.44', '2');
 
 -- init referee table
 INSERT INTO referee(ref_id, ref_name, sex) VALUES('1', 'Pat Hoberg', 'male');
