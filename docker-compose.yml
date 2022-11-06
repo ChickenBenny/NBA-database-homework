@@ -11,3 +11,9 @@ services:
     volumes:
       - ./database/pg:/var/lib/postgresql
       - ./database/sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "4173:4173"
