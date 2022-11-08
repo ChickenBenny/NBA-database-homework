@@ -23,4 +23,3 @@ class DBConnection():
     def close_conn(self, connection, cursor):
         cursor.close()
         connection.close()
-        print("Close the connection.")
