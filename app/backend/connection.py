@@ -1,6 +1,6 @@
 import psycopg2
 
-class DBConnection():
+class DBConnection:
     
     def __init__(self):
         self.database = "postgres"
