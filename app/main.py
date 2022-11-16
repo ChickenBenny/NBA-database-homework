@@ -168,6 +168,10 @@ class Ui_MainWindow(object):
             self._update()
         elif text == 'IN':
             self._in()
+        elif text == 'NOT IN':
+            self._not_in()
+        elif text == 'EXISTS':
+            self._exists()
         
 
     def _show_result(self, cursor, rows, space):
@@ -250,11 +254,25 @@ class Ui_MainWindow(object):
         self._show_result(cursor, rows, 2)  
 
     def _in(self):
-        query = "SELECT H.player_id AS id, H.position, P.first_name AS fName, P.last_name AS lName FROM hitter_stats AS H, player AS P WHERE H.player_ssn=P.player_ssn AND H.position='3B';"
+        query = "SELECT H.player_id AS id, H.position, P.first_name AS fName, P.last_name AS lName FROM hitter_stats AS H, player AS P WHERE H.player_ssn IN (SELECT H.player_ssn WHERE H.player_ssn=P.player_ssn AND H.position IN ('3B'));"
         cursor = self.conn.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
-        self._show_result(cursor, rows, 2)          
+        self._show_result(cursor, rows, 2)        
+
+    def _not_in(self):
+        query = "SELECT P.player_id AS id, PY.first_name AS fname, PY.last_name AS lname, P.era, P.win FROM pitcher_stats AS P, player AS PY WHERE P.player_ssn NOT IN (SELECT player_ssn FROM pitcher_stats WHERE era >= '0' AND era < '2') AND PY.player_ssn=P.player_ssn;"
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self._show_result(cursor, rows, 2)     
+
+    def _exists(self):
+        query = "SELECT G.game_id, R.ref_id, R.ref_name FROM game AS G, referee AS R WHERE EXISTS (SELECT 1 WHERE G.dt='2022-10-15' AND R.ref_id=G.ref_id);"
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self._show_result(cursor, rows, 2)                       
 
     def getInput(self, object): # function to get user input sql
         text = object.toPlainText()
@@ -298,16 +316,16 @@ class Ui_MainWindow(object):
             ]
         elif text == 'IN':
             output = '找出防守位置是3B的打者'
-            self.current_text = ["SELECT H.player_id AS id, H.position, P.first_name AS fName, P.last_name AS lName FROM hitter_stats AS H, player AS P WHERE H.player_ssn=P.player_ssn AND H.position='3B';"]
+            self.current_text = ["SELECT H.player_id AS id, H.position, P.first_name AS fName, P.last_name AS lName FROM hitter_stats AS H, player AS P WHERE H.player_ssn IN (SELECT H.player_ssn WHERE H.player_ssn=P.player_ssn AND H.position IN ('3B'));"]
         elif text == 'NOT IN':
-            output = '找出敘述不為達人以下的咖啡師'
-            self.current_text = "SELECT user_name, user_tenure, user_dscrp FROM user_info WHERE user_dscrp NOT IN (\'準達人咖啡師\', \'達人咖啡師\', \'特A達人咖啡師\');"
+            output = '找出防禦率不再2以內的投手'
+            self.current_text = ["SELECT P.player_id AS id, PY.first_name AS fname, PY.last_name AS lname, P.era, P.win FROM pitcher_stats AS P, player AS PY WHERE P.player_ssn NOT IN (SELECT player_ssn FROM pitcher_stats WHERE era >= '0' AND era < '2') AND PY.player_ssn=P.player_ssn;"]
         elif text == 'EXISTS':
-            output = '找出使用過手沖法沖泡咖啡的人'
-            self.current_text = 'SELECT user_id, user_name FROM user_info WHERE EXISTS (SELECT e_user_id FROM exp WHERE user_id = e_user_id AND e_proc_id IN (SELECT process_id FROM process WHERE method IN (\'手沖濾掛\', \'手沖梯形濾杯\', \'手沖圓錐濾杯\')));'
+            output = '找出 2022-10-15 有出場判決的裁判'
+            self.current_text = ["SELECT G.game_id, R.ref_id, R.ref_name FROM game AS G, referee AS R WHERE EXISTS (SELECT 1 WHERE G.dt='2022-10-15' AND R.ref_id=G.ref_id);"]
         elif text == 'NOT EXISTS':
-            output = '找出沒有使用過深焙咖啡豆的人'
-            self.current_text = 'SELECT user_id, user_name FROM user_info WHERE NOT EXISTS (SELECT e_user_id FROM exp WHERE user_id = e_user_id AND e_bean_id IN (SELECT bean_id FROM bean_info WHERE category_id IN (SELECT roast_id FROM roast WHERE roast_name IN (\'深焙\', \'直火深焙\'))));'
+            output = '找出全壘打不足兩隻的打者'
+            self.current_text = ["SELECT H.player_id AS id, H.position, P.first_name AS fname, P.last_name AS lname from"]
         elif text == 'COUNT':
             output = '找出資料庫有幾種咖啡豆'
             self.current_text = 'SELECT COUNT(bean_id) FROM bean_info'
