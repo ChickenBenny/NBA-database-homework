@@ -150,7 +150,7 @@ INSERT INTO team(team_id,team_name,champ,stadium,coach) VALUES(21, 'Golden State
 INSERT INTO team(team_id,team_name,champ,stadium,coach) VALUES(22, 'Los Angeles Clippers', 0, 22, 20);
 INSERT INTO team(team_id,team_name,champ,stadium,coach) VALUES(23, 'Los Angeles Lakers', 17, 23, 21);
 INSERT INTO team(team_id,team_name,champ,stadium,coach) VALUES(24, 'Phoenix Suns', 0, 24, 26);
-INSERT INTO team(team_id,team_name,champ,stadium,coach) VALUES(25, 'Sacramento Kings', 1, 25, 28);
+INSERT INTO team(team_id,team_name,champ,stadium,coach) VALUES(25, 'Sacramento Kings  ', 1, 25, 28);
 INSERT INTO team(team_id,team_name,champ,stadium,coach) VALUES(26, 'Dallas Mavericks', 1, 26, 16);
 INSERT INTO team(team_id,team_name,champ,stadium,coach) VALUES(27, 'Houston Rockets', 0, 27, 19);
 INSERT INTO team(team_id,team_name,champ,stadium,coach) VALUES(28, 'Memphis Grizzlies', 0, 28, 22);
