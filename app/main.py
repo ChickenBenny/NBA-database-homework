@@ -172,6 +172,20 @@ class Ui_MainWindow(object):
             self._not_in()
         elif text == 'EXISTS':
             self._exists()
+        elif text == "NOT EXISTS":
+            self._not_exists()
+        elif text == "COUNT":
+            self._count()
+        elif text == "SUM":
+            self._sum()
+        elif text == "MAX":
+            self._max()
+        elif text == 'MIN':
+            self._min()
+        elif text == "AVG":
+            self._avg()
+        elif text == "HAVING":
+            self._having()
         
 
     def _show_result(self, cursor, rows, space):
@@ -224,50 +238,99 @@ class Ui_MainWindow(object):
         cursor.execute(query)
         self.conn.commit()         
 
-        query = "SELECT G.dt AS Date_of_the_game, S.stadium_name, S.stadium_state, G.score FROM game AS G, stadium as S WHERE G.stadium=S.stadium_id AND game_id=21 AND dt='2022-11-2';"
+        query = "SELECT G.dt AS Date_of_the_game, S.stadium_name, S.stadium_state AS state, G.score FROM game AS G, stadium as S WHERE G.stadium=S.stadium_id AND game_id=21 AND dt='2022-11-2';"
         cursor = self.conn.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
         self._show_result(cursor, rows, 2)    
 
     def _update(self):
-        query = "SELECT G.dt, G.game_id, G.home_team, T.team_name FROM game as G, team as T WHERE G.home_team=T.team_id AND T.team_name='Houston Astros' AND G.dt='2022-10-29';"
+        query = "SELECT N.first_name AS Fname, N.last_name AS Lname, T.team_name FROM nba_player AS N, team AS T WHERE N.current_team=T.team_id AND N.first_name='Jayson' AND N.last_name='Tatum';"
         cursor = self.conn.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
         self._show_result(cursor, rows, 2) 
 
-        query = "UPDATE game SET dt='2022-11-02' WHERE game_id IN(SELECT G.game_id FROM game as G, team as T WHERE G.home_team=T.team_id AND T.team_name='Houston Astros' AND G.dt='2022-10-29');"                 
+        query = "UPDATE nba_player SET current_team=7 WHERE player_id IN(SELECT player_id FROM nba_player WHERE first_name='Jayson' AND last_name='Tatum');"                 
         cursor = self.conn.cursor()
         cursor.execute(query)
         self.conn.commit()     
 
-        query = "SELECT G.dt, G.game_id, G.home_team, T.team_name FROM game as G, team as T WHERE G.home_team=T.team_id AND T.team_name='Houston Astros' AND G.dt='2022-11-2';"
+        query = "SELECT N.first_name AS Fname, N.last_name AS Lname, T.team_name FROM nba_player AS N, team AS T WHERE N.current_team=T.team_id AND N.first_name='Jayson' AND N.last_name='Tatum';"
         cursor = self.conn.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
         self._show_result(cursor, rows, 2)  
 
     def _in(self):
-        query = "SELECT H.player_id AS id, H.position, P.first_name AS fName, P.last_name AS lName FROM hitter_stats AS H, player AS P WHERE H.player_ssn IN (SELECT H.player_ssn WHERE H.player_ssn=P.player_ssn AND H.position IN ('3B'));"
+        query = "SELECT first_name AS Fname, last_name AS Lname FROM nba_player WHERE player_id IN (SELECT N.player_id FROM nba_player AS N, team AS T WHERE N.position='G' AND N.current_team=T.team_id AND T.team_id=27);"
         cursor = self.conn.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
         self._show_result(cursor, rows, 2)        
 
     def _not_in(self):
-        query = "SELECT P.player_id AS id, PY.first_name AS fname, PY.last_name AS lname, P.era, P.win FROM pitcher_stats AS P, player AS PY WHERE P.player_ssn NOT IN (SELECT player_ssn FROM pitcher_stats WHERE era >= '0' AND era < '2') AND PY.player_ssn=P.player_ssn;"
+        query = "SELECT first_name AS Fname, last_name AS Lname, height FROM nba_player WHERE player_id NOT IN(SELECT player_id FROM nba_player WHERE height>=7.0) AND position='C';"
         cursor = self.conn.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
         self._show_result(cursor, rows, 2)     
 
     def _exists(self):
-        query = "SELECT G.game_id, R.ref_id, R.ref_name FROM game AS G, referee AS R WHERE EXISTS (SELECT 1 WHERE G.dt='2022-10-15' AND R.ref_id=G.ref_id);"
+        query = "SELECT G.dt AS Date_of_the_game, S.stadium_name FROM stadium AS S, game AS G WHERE EXISTS (SELECT 1 WHERE G.dt='2022-11-2' AND G.stadium=S.stadium_id);"
         cursor = self.conn.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
-        self._show_result(cursor, rows, 2)                       
+        self._show_result(cursor, rows, 2)          
+
+    def _not_exists(self):
+        query = "SELECT team_name FROM team WHERE NOT EXISTS (SELECT 1 WHERE champ!=0);" 
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self._show_result(cursor, rows, 2)    
+
+    def _count(self):
+        query = "SELECT COUNT(team_id) FROM team;"
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self._show_result(cursor, rows, 2)
+
+    def _sum(self):
+        query = "SELECT SUM(champ) FROM team WHERE team_name='Boston Celtics' OR team_name='Los Angeles Lakers';"
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self._show_result(cursor, rows, 2)
+
+    def _max(self):
+        query = "SELECT first_name AS Fname, last_name AS Lname, MAX(height) FROM nba_player GROUP BY player_id ORDER BY MAX(height) DESC LIMIT 1;"
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self._show_result(cursor, rows, 2)        
+
+    def _min(self):
+        query = "SELECT first_name AS Fname, last_name AS Lname, MIN(height) FROM nba_player GROUP BY player_id ORDER BY MIN(height) ASC LIMIT 1;"
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self._show_result(cursor, rows, 2) 
+
+    def _avg(self):
+        query = "SELECT AVG(champ) FROM coach;"
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self._show_result(cursor, rows, 2) 
+
+    def _having(self):
+        query = "SELECT first_name AS Fname, last_name AS Lname, MAX(height) FROM nba_player GROUP BY player_id HAVING MAX(height)>6.7;"
+        cursor = self.conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        self._show_result(cursor, rows, 2) 
 
     def getInput(self, object): # function to get user input sql
         text = object.toPlainText()
@@ -299,45 +362,45 @@ class Ui_MainWindow(object):
             output = '由於暴動被警察適當的鎮壓，因此11月1日芝加哥球館的比賽在11月2日中重新舉行，並且該比賽最終比數為108-99。'
             self.current_text = [
                 "INSERT INTO game(game_id, dt, score, stadium, home, away) VALUES(21, '2022-11-2', '108-99', '6', '6', '16');",
-                "SELECT G.dt AS Date_of_the_game, S.stadium_name, S.stadium_state, G.score FROM game AS G, stadium as S WHERE G.stadium=S.stadium_id AND game_id=21 AND dt='2022-11-2';",
+                "SELECT G.dt AS Date_of_the_game, S.stadium_name, S.stadium_state AS state, G.score FROM game AS G, stadium as S WHERE G.stadium=S.stadium_id AND game_id=21 AND dt='2022-11-2';",
             ]
         elif text == 'UPDATE':
-            output = '太空人對決費城人在10/29的比賽因為遇到暴雨，因此延期到11/2號'
+            output = '賽爾提克的 Jason Tatum 因為季中交易案，被塞爾提克交易至騎士隊'
             self.current_text = [
-                "SELECT G.dt, G.game_id, G.home_team, T.team_name FROM game as G, team as T WHERE G.home_team=T.team_id AND T.team_name='Houston Astros' AND G.dt='2022-10-29';",
-                "UPDATE game SET dt='2022-11-02' WHERE game_id IN(SELECT G.game_id FROM game as G, team as T WHERE G.home_team=T.team_id AND T.team_name='Houston Astros' AND G.dt='2022-10-29');"
-                "SELECT G.dt, G.game_id, G.home_team, T.team_name FROM game as G, team as T WHERE G.home_team=T.team_id AND T.team_name='Houston Astros' AND G.dt='2022-11-2';",
+                "SELECT N.first_name AS Fname, N.last_name AS Lname, T.team_name FROM nba_player AS N, team AS T WHERE N.current_team=T.team_id AND N.first_name='Jayson' AND N.last_name='Tatum';",
+                "UPDATE nba_player SET current_team=7 WHERE player_id IN(SELECT player_id FROM nba_player WHERE first_name='Jayson' AND last_name='Tatum');"
+                "SELECT N.first_name AS Fname, N.last_name AS Lname, T.team_name FROM nba_player AS N, team AS T WHERE N.current_team=T.team_id AND N.first_name='Jayson' AND N.last_name='Tatum';",
             ]
         elif text == 'IN':
-            output = '找出防守位置是3B的打者'
-            self.current_text = ["SELECT H.player_id AS id, H.position, P.first_name AS fName, P.last_name AS lName FROM hitter_stats AS H, player AS P WHERE H.player_ssn IN (SELECT H.player_ssn WHERE H.player_ssn=P.player_ssn AND H.position IN ('3B'));"]
+            output = '找出在 Rocket 打後衛 (G) 的所有球員'
+            self.current_text = ["SELECT first_name AS Fname, last_name AS Lname FROM nba_player WHERE player_id IN (SELECT N.player_id FROM nba_player AS N, team AS T WHERE N.position='G' AND N.current_team=T.team_id AND T.team_id=27);"]
         elif text == 'NOT IN':
-            output = '找出防禦率不再2以內的投手'
-            self.current_text = ["SELECT P.player_id AS id, PY.first_name AS fname, PY.last_name AS lname, P.era, P.win FROM pitcher_stats AS P, player AS PY WHERE P.player_ssn NOT IN (SELECT player_ssn FROM pitcher_stats WHERE era >= '0' AND era < '2') AND PY.player_ssn=P.player_ssn;"]
+            output = '找出身高不再7尺以上的中鋒 (C) 的球員'
+            self.current_text = ["SELECT first_name AS Fname, last_name AS Lname, height FROM nba_player WHERE player_id NOT IN(SELECT player_id FROM nba_player WHERE height>=7.0) AND position='C';"]
         elif text == 'EXISTS':
-            output = '找出 2022-10-15 有出場判決的裁判'
-            self.current_text = ["SELECT G.game_id, R.ref_id, R.ref_name FROM game AS G, referee AS R WHERE EXISTS (SELECT 1 WHERE G.dt='2022-10-15' AND R.ref_id=G.ref_id);"]
+            output = '找出 2022-11-2 有進行比賽的球場'
+            self.current_text = ["SELECT G.dt AS Date_of_the_game, S.stadium_name FROM stadium AS S, game AS G WHERE EXISTS (SELECT 1 WHERE G.dt='2022-11-2' AND G.stadium=S.stadium_id);"]
         elif text == 'NOT EXISTS':
-            output = '找出全壘打不足兩隻的打者'
-            self.current_text = ["SELECT H.player_id AS id, H.position, P.first_name AS fname, P.last_name AS lname from"]
+            output = '找出從來沒有奪冠過的球隊'
+            self.current_text = ["SELECT team_name FRON team WHERE NOT EXISTS (SELECT 1 WHERE champ!=0);"]
         elif text == 'COUNT':
-            output = '找出資料庫有幾種咖啡豆'
-            self.current_text = 'SELECT COUNT(bean_id) FROM bean_info'
+            output = '找出 NBA 總共有幾支球隊'
+            self.current_text = ["SELECT COUNT(team_id) FROM team;"]
         elif text == 'SUM':
-            output = '找出小萬全部經驗的總花費'
-            self.current_text = 'SELECT SUM(cost) FROM device WHERE device_id IN (SELECT device_device_id FROM method_need_device WHERE process_process_id IN (SELECT process_id FROM process, exp, user_info WHERE process_id = e_proc_id AND e_user_id = user_id AND user_name=\'小萬\'))'
+            output = '找出 Lakers 和 Celtics 獲得的總冠軍數'
+            self.current_text = ["SELECT SUM(champ) FROM team WHERE team_name='Boston Celtics' OR team_name='Los Angeles Lakers';"]
         elif text == 'MAX':
-            output = '找出使用者中年資最大的'
-            self.current_text = 'SELECT user_name, user_tenure FROM user_info WHERE user_tenure IN (SELECT MAX(user_tenure) FROM user_info)'
+            output = '找出身高最高的球員'
+            self.current_text = ["SELECT first_name AS Fname, last_name AS Lname, MAX(height) FROM nba_player GROUP BY player_id ORDER BY MAX(height) DESC LIMIT 1;"]
         elif text == 'MIN':
-            output = '找出使用者中年資最小的'
-            self.current_text = 'SELECT user_name, user_tenure FROM user_info WHERE user_tenure IN (SELECT MIN(user_tenure) FROM user_info)'
+            output = '找出身高最矮的球員'
+            self.current_text = ["SELECT first_name AS Fname, last_name AS Lname, MIN(height) FROM nba_player GROUP BY player_id ORDER BY MIN(height) ASC LIMIT 1;"]
         elif text == 'AVG':
-            output = '找出國佑平均沖泡咖啡使用的溫度'
-            self.current_text = 'SELECT AVG(e_temp) FROM exp WHERE e_user_id IN (SELECT user_id FROM user_info WHERE user_name = \'國佑\')'
+            output = '找出教頭平均奪冠次數'
+            self.current_text = ["SELECT AVG(champ) FROM coach;"]
         elif text == 'HAVING':
-            output = '找出使用者經驗平均使用豆重大於15克的使用者'
-            self.current_text = 'SELECT user_id, user_name, AVG(e_weight) FROM user_info, exp WHERE user_id = e_user_id GROUP BY user_id HAVING AVG(e_weight) > 15;'
+            output = '找出身高超過6.7尺的球員'
+            self.current_text = ["SELECT first_name AS Fname, last_name AS Lname, MAX(height) FROM nba_player GROUP BY player_id HAVING MAX(height)>6.7;"]
         self.infoBrowser.append(output) # Print scenairo
 
     def retranslateUi(self, MainWindow): # Format, set Style of UI
