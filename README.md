@@ -1,5 +1,21 @@
 # RDBMS homework - NBA Database
 
+## Quick start
+1. clone the repository and enter the folder
+```
+$ git clone https://github.com/ChickenBenny/NBA-database-homework
+$ cd NBA-database-homework
+```
+2. Use docker to build the database
+```
+$ docker-compose up
+```
+3. Install the requirement and run the GUI app 
+```
+$ pip install -r requirements.txt
+$ python main.py
+```
+
 ## ER Diagrams
 ![](https://i.imgur.com/7MdSdTy.png)
 
