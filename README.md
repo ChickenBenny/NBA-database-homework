@@ -16,13 +16,14 @@ $ pip install -r requirements.txt
 $ python main.py
 ```
 ## 系統架構與環境
-* 系統架構
+### 系統架構
+
 ![](https://i.imgur.com/LVsNkTD.png)
-* 系統環境
-系統 : Ubuntu 20.04
-容器 : Docker 20.10.17
-資料庫 : PostgresSQL 13
-前端 : PyQT5
+### 系統環境 
+* 系統 : Ubuntu 20.04
+* 容器 : Docker 20.10.17
+* 資料庫 : PostgresSQL 13
+* 前端 : PyQT5
 * 使用說明
     1. 使用 `docker-compose up` 架設 Postgres。
     ![](https://i.imgur.com/ZQYS67N.png)
