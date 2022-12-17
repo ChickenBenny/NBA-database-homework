@@ -13,7 +13,7 @@ $ docker-compose up
 3. Install the requirement and run the GUI app 
 ```
 $ pip install -r requirements.txt
-$ python main.py
+$ python ./app/main.py
 ```
 ## 系統架構與環境
 ### 系統架構
