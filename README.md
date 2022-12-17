@@ -15,9 +15,27 @@ $ docker-compose up
 $ pip install -r requirements.txt
 $ python main.py
 ```
+## 系統架構與環境
+* 系統架構
+![](https://i.imgur.com/LVsNkTD.png)
+* 系統環境
+系統 : Ubuntu 20.04
+容器 : Docker 20.10.17
+資料庫 : PostgresSQL 13
+前端 : PyQT5
+* 使用說明
+    1. 使用 `docker-compose up` 架設 Postgres。
+    ![](https://i.imgur.com/ZQYS67N.png)
+    2. 確認 Postgres 是否成功架設。
+    ![](https://i.imgur.com/2FbQUg3.png)
+    3. 使用 `python ./app/main.py`開啟前端 UI 頁面。
+    ![](https://i.imgur.com/azYMCke.png)
+    4. 下拉選擇你要的 query，然後點選 show 便能觸發該 query。(點選 Clear 刪除頁面上的結果)
+    ![](https://i.imgur.com/UGHMOpJ.png)
+
 
 ## ER Diagrams
-![](https://i.imgur.com/7MdSdTy.png)
+![](https://i.imgur.com/T3kgJQ7.png)
 
 ## Relation schema
 ![](https://i.imgur.com/o8EQIOh.png)
@@ -25,29 +43,29 @@ $ python main.py
 ## 資料庫基本需求
 
 ### Entity (5個)
-* **nba_player** : 
+* **nba_player** (共43筆資料) : 
     1. player_id (**primary key**) : 球員的 id，為 key attribute。
     2. first_name : 球員的 first_name。
     3. last_name : 球員的 last_name。
     4. position : 球員在球隊中的打的位置。
     5. height : 球員的身高。
     6. current_team (**foreign key**) : 目前球員所屬的球隊。
-* **team** : 
+* **team** (共30筆資料) : 
     1. team_id (**primary key**) : 球隊的 id。
     2. name : 球隊的名稱。
     3. team_state : 球隊所屬的州 。
     4. coach (**foreign key**) : 球隊的總教練 id。
     5. stadium (**forign key**) : 球隊得主隊球場 id。
-* **coach** : 
+* **coach** (共30筆資料) : 
     1. coach_id (**primary key**) : 教練的 id。
     2. name : 教練的名稱。
     3. champ : 奪冠總數量。
-* **stadium** : 
+* **stadium** (共30筆資料) : 
     1. stadium_id (**primary key**) : 球場的 id。
     2. name : 球場的名稱。
     3. staduyn)state : 球場所在的州。
     4. seating : 球場的觀眾席次。
-* **game**
+* **game** (共20筆資料) :
     1. game_id (**primary key**) : 比賽的 id。
     2. dt : 比賽的日期。
     3. score : 比賽結束的比分。
